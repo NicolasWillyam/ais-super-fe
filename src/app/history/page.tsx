@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DateTimePicker } from "@/components/ui/date-time";
 
 interface HistoryData {
   utcpos: number;
@@ -54,10 +55,14 @@ const formatTime = (utcpos: number) => {
   return new Date(utcpos * 1000).toLocaleString("vi-VN", { hour12: false });
 };
 
-// Hàm chuyển quãng đường km sang km + hải lý
-const formatDistance = (km: number) => {
-  const nautical = (km / 1.852).toFixed(2);
-  return `${km.toFixed(2)} km (${nautical} hải lý)`;
+// Hàm chuyển quãng đường m sang km nếu đủ lớn + hải lý
+const formatDistance = (m: number) => {
+  const nautical = (m / 1852).toFixed(2); // 1 hải lý = 1852 m
+  // if (m >= 1000) {
+  //   const km = (m / 1000).toFixed(2);
+  //   return `${km} km (${nautical} hải lý)`;
+  // }
+  return `${m.toFixed(2)} m (${nautical} hải lý)`;
 };
 
 export default function HistoryRoutePage() {
@@ -72,6 +77,9 @@ export default function HistoryRoutePage() {
 
   const [buoys, setBuoys] = useState<any[]>([]);
 
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [endTime, setEndTime] = useState<Date | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -79,8 +87,8 @@ export default function HistoryRoutePage() {
     setData([]);
 
     try {
-      const begin = beginDate ? Math.floor(beginDate.getTime() / 1000) : "";
-      const end = endDate ? Math.floor(endDate.getTime() / 1000) : "";
+      const begin = startTime ? Math.floor(startTime.getTime() / 1000) : 0;
+      const end = endTime ? Math.floor(endTime.getTime() / 1000) : 0;
 
       const query = `mmsi=${mmsi}&name=${name}&calsign=&imo=&begin=${begin}&end=${end}&async=0&_=${Date.now()}`;
       // const res = await fetch(`https://ais-super-601ce338d685.herokuapp.com/ais/historyroute?${query}`);
@@ -187,53 +195,17 @@ export default function HistoryRoutePage() {
               />
             </div>
 
-            {/* Date Picker Begin */}
-            <div className="flex gap-2">
-              <Label className="pl-2">Begin:</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-44 justify-start text-left"
-                  >
-                    {beginDate
-                      ? beginDate.toLocaleDateString()
-                      : "Chọn ngày bắt đầu"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={beginDate}
-                    onSelect={setBeginDate}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {/* Date Picker End */}
-            <div className="flex gap-2">
-              <Label className="pl-2">End:</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-44 justify-start text-left"
-                  >
-                    {endDate
-                      ? endDate.toLocaleDateString()
-                      : "Chọn ngày kết thúc"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            {/* Thời gian chọn */}
+            <DateTimePicker
+              value={startTime}
+              onChange={setStartTime}
+              placeholder="Bắt đầu"
+            />
+            <DateTimePicker
+              value={endTime}
+              onChange={setEndTime}
+              placeholder="Kết thúc"
+            />
 
             <div className="flex items-center gap-2">
               <Label className="text-sm">Khoảng thời gian:</Label>
@@ -312,8 +284,14 @@ export default function HistoryRoutePage() {
         </div>
       )}
 
-      <div className="pt-12">
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+      <div className="">
+        {error && (
+          <>
+            <div className="w-[calc(100vw-80px)] h-screen flex items-center justify-center mx-auto bg-greem-500">
+              <p className="text-red-500 mb-4 mx-auto">{error}</p>
+            </div>
+          </>
+        )}
 
         {data.length > 0 && (
           <div className="w-[calc(100vw-80px)]">

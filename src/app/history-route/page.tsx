@@ -55,9 +55,14 @@ const formatTime = (utcpos: number) => {
 };
 
 // Hàm chuyển quãng đường km sang km + hải lý
-const formatDistance = (km: number) => {
-  const nautical = (km / 1.852).toFixed(2);
-  return `${km.toFixed(2)} km (${nautical} hải lý)`;
+// Hàm chuyển quãng đường m sang km nếu đủ lớn + hải lý
+const formatDistance = (m: number) => {
+  const nautical = (m / 1852).toFixed(2); // 1 hải lý = 1852 m
+  // if (m >= 1000) {
+  //   const km = (m / 1000).toFixed(2);
+  //   return `${km} km (${nautical} hải lý)`;
+  // }
+  return `${m.toFixed(2)} m (${nautical} hải lý)`;
 };
 
 export default function HistoryRoutePage() {

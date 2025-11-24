@@ -56,7 +56,7 @@ export function DateTimePicker({
               <div className="flex items-center gap-2">
                 <Calendar1 />
                 {value
-                  ? value.toLocaleDateString()
+                  ? value.toLocaleDateString("vi-VN")
                   : placeholder || "Select date"}
               </div>
               <ChevronDownIcon />
@@ -87,6 +87,15 @@ export function DateTimePicker({
       </div>
 
       <div className="flex flex-col gap-3">
+        {/* <Input
+          type="time"
+          id="time-picker"
+          step="1"
+          value={time}
+          onChange={handleTimeChange}
+          className="rounded-none pl-2 rounded-r-full bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+        />  */}
+
         <Input
           type="time"
           id="time-picker"
